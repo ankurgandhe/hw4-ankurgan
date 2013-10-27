@@ -53,6 +53,7 @@ extends JCasAnnotator_ImplBase  {
 		
 
 		StringBuffer sResTxt = new StringBuffer();
+		// Added toLowerCase() 
 		for (int i=2; i<rec.length; i++) {
 			sResTxt.append(rec[i]).append(" ");					
 		}
