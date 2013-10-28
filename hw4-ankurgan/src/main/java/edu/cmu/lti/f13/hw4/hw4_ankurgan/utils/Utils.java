@@ -87,12 +87,15 @@ public class Utils {
 	 * @return cosine_similarity
 	 */
 	public static double computeCosineSimilarity(
-			Map<String, Integer> queryVector, Map<String, Integer> docVector) {
+			Map<String, Integer> queryVector, Map<String, Integer> docVector,
+			ArrayList<String> stopWords) {
 		double cosine_similarity = 0.0;
 
 		double crossProduct = 0.0, normQuery = 0.0, normDoc = 0.0;
 
 		for (String word : queryVector.keySet()) {
+			if (stopWords.contains(word))
+				continue;
 			if (docVector.containsKey(word)) {
 				crossProduct = crossProduct + queryVector.get(word)
 						* docVector.get(word);
@@ -102,6 +105,8 @@ public class Utils {
 		normQuery = Math.sqrt(normQuery);
 
 		for (String word : docVector.keySet()) {
+			if (stopWords.contains(word))
+				continue;
 			normDoc += docVector.get(word) * docVector.get(word);
 		}
 		normDoc = Math.sqrt(normDoc);
@@ -116,7 +121,8 @@ public class Utils {
 	 * @return jaccard_similarity
 	 */
 	public static double computeJaccardSimilarity(
-			Map<String, Integer> queryVector, Map<String, Integer> docVector) {
+			Map<String, Integer> queryVector, Map<String, Integer> docVector,
+			ArrayList<String> stopWords) {
 		double jaccard_similarity = 0.0;
 		double intersectionValue = 0.0, unionValue = 0.0;
 		// ArrayList<String> Union = new ArrayList<String>();
@@ -125,20 +131,23 @@ public class Utils {
 		union.putAll(docVector);
 
 		for (String word : union.keySet()) {
+			if (stopWords.contains(word))
+				continue;
 			if (queryVector.containsKey(word)) {
 				if (docVector.containsKey(word)) {
 					intersectionValue += Math.min(queryVector.get(word),
 							docVector.get(word));
-				} else {
-					unionValue += queryVector.get(word);
+					unionValue += docVector.get(word);
 				}
+				unionValue += queryVector.get(word);
+
 			} else {
 				if (queryVector.containsKey(word)) {
 					intersectionValue += Math.min(queryVector.get(word),
 							docVector.get(word));
-				} else {
 					unionValue += docVector.get(word);
 				}
+				unionValue += docVector.get(word);
 			}
 
 		}
@@ -148,23 +157,30 @@ public class Utils {
 
 	}
 
+	public static double computeScore(ArrayList<Double> scoreList,
+			ArrayList<Double> weightList) {
+		double score = 0.0,totwt =0.0;
+		int idx=0;
+		for ( double sc : scoreList){
+			double wt = weightList.get(idx);
+			score+= sc*wt;
+			totwt+=wt;
+			idx=idx+1;
+		}
+		return score/totwt;
+	}
+
 	/**
-	 * Read the stop words in src/main/resources/doc/stopwords.txt
+	 * Read the stop words in src/main/resources/stopwords.txt
 	 * 
 	 * @author ankurgan
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static ArrayList<String> readStopWords() throws IOException {
 		ArrayList<String> stopWords = new ArrayList<String>();
-		URL stopWordsUrl = VectorSpaceRetrieval.class
-				.getResource("/doc/stopwords.txt");
-		if (stopWordsUrl == null) {
-			throw new IllegalArgumentException(
-					"Error opening doc/stopwords.txt");
-		}
-		BufferedReader br = new BufferedReader(new InputStreamReader(
-				stopWordsUrl.openStream()));
-		
+
+		BufferedReader br = new BufferedReader(new FileReader(
+				"src/main/resources/stopwords.txt"));
 		try {
 			String line = br.readLine();
 			while (line != null) {

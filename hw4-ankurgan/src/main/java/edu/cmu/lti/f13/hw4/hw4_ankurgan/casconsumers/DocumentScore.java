@@ -12,7 +12,10 @@ import java.util.Map;
 		public Integer relevanceValue;
 		public String text;
 		public Map<String, Integer> docTokenMap;
+		public Map<String, Integer> docLowerTokenMap;
 		public double score;
-
+		public Map<String, Integer> docNGramMap;
+		public Map<String, Integer> docLemmaMap;
+		
 	}
 	

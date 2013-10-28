@@ -11,8 +11,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Fri Oct 25 09:36:40 EDT 2013
- * XML source: C:/Users/gandhe/Dropbox/Semester 3/Software_Engineering/Assign4/hw4-ankurgan/src/main/resources/descriptors/typesystems/VectorSpaceTypes.xml
+ * Updated by JCasGen Sun Oct 27 22:47:51 EDT 2013
+ * XML source: C:/Users/gandhe/git/hw4-ankurgan/hw4-ankurgan/src/main/resources/descriptors/typesystems/VectorSpaceTypes.xml
  * @generated */
 public class Token extends Annotation {
   /** @generated
@@ -96,6 +96,24 @@ public class Token extends Annotation {
     if (Token_Type.featOkTst && ((Token_Type)jcasType).casFeat_frequency == null)
       jcasType.jcas.throwFeatMissing("frequency", "edu.cmu.lti.f13.hw4.hw4_ankurgan.typesystems.Token");
     jcasType.ll_cas.ll_setIntValue(addr, ((Token_Type)jcasType).casFeatCode_frequency, v);}    
+   
+    
+  //*--------------*
+  //* Feature: lemma
+
+  /** getter for lemma - gets The lamma of the token word
+   * @generated */
+  public String getLemma() {
+    if (Token_Type.featOkTst && ((Token_Type)jcasType).casFeat_lemma == null)
+      jcasType.jcas.throwFeatMissing("lemma", "edu.cmu.lti.f13.hw4.hw4_ankurgan.typesystems.Token");
+    return jcasType.ll_cas.ll_getStringValue(addr, ((Token_Type)jcasType).casFeatCode_lemma);}
+    
+  /** setter for lemma - sets The lamma of the token word 
+   * @generated */
+  public void setLemma(String v) {
+    if (Token_Type.featOkTst && ((Token_Type)jcasType).casFeat_lemma == null)
+      jcasType.jcas.throwFeatMissing("lemma", "edu.cmu.lti.f13.hw4.hw4_ankurgan.typesystems.Token");
+    jcasType.ll_cas.ll_setStringValue(addr, ((Token_Type)jcasType).casFeatCode_lemma, v);}    
   }
 
     
