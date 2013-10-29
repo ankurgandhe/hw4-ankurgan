@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.uima.cas.CAS;
@@ -82,7 +81,7 @@ public class RetrievalEvaluator extends CasConsumer_ImplBase {
 			if (type=="lower")
 				word = token.getText().toLowerCase();
 			else if (type=="lemma"){
-				word = token.getLemma();
+				word = token.getLemma().toLowerCase();
 			}
 			else
 				word = token.getText();
@@ -139,8 +138,6 @@ public class RetrievalEvaluator extends CasConsumer_ImplBase {
 			// compute the cosine similarity measure
 			scoreSimilarity = computeSimilarity(queryDocScore, docScore,
 					stopWords);
-			//System.out.println(currentQid + ":" + scoreSimilarity + ":"
-			//		+ docScore.text);
 			docScore.score = scoreSimilarity;
 			documentPerQueryList.add(docScore);
 		}
@@ -159,23 +156,27 @@ public class RetrievalEvaluator extends CasConsumer_ImplBase {
 	private double computeSimilarity(DocumentScore queryDocScore,
 			DocumentScore docScore, ArrayList<String> stopWords) {
 		ArrayList<String> stopWordsEmpty = new ArrayList<String>();
-		stopWords = stopWordsEmpty;
+		//stopWords = stopWordsEmpty;
 		double score=0.0;
 		ArrayList<Double> scoreList = new ArrayList<Double>();
 		ArrayList<Double> weightList = new ArrayList<Double>();
-		score = Utils.computeCosineSimilarity(queryDocScore.docLowerTokenMap,
-				docScore.docLowerTokenMap, stopWords);
+		// score on different kinds vectors  
+		// lower cased token vectors
+		score = Utils.computeJaccardSimilarity(queryDocScore.docLowerTokenMap,
+				docScore.docLowerTokenMap, stopWordsEmpty);
 		scoreList.add(score);
 		weightList.add(0.4);
+		//normal token vectors
 		score = Utils.computeJaccardSimilarity(queryDocScore.docTokenMap,
-				docScore.docTokenMap, stopWords);
+				docScore.docTokenMap, stopWordsEmpty);
 		scoreList.add(score);
 		weightList.add(0.0);
+		//lemma vectors
 		score = Utils.computeJaccardSimilarity(queryDocScore.docLemmaMap,
-				docScore.docLemmaMap, stopWords);
+				docScore.docLemmaMap, stopWordsEmpty);
 		scoreList.add(score);
 		weightList.add(1.0);
-		
+		// Compute final weighted score 
 		score = Utils.computeScore(scoreList,weightList);
 				
 		score = Math.round(score * 1000) / 1000.0d;
@@ -190,10 +191,8 @@ public class RetrievalEvaluator extends CasConsumer_ImplBase {
 		Collections.sort(documentPerQueryList, new ScoreComparator());
 		rank = 1;
 		for (DocumentScore docScore : documentPerQueryList) {
-			// System.out.println(docScore.queryID + ":" + docScore.score + ":"
-			// + docScore.relevanceValue);
 			if (docScore.relevanceValue == 1) {
-				System.out.println("Score:" + docScore.score + "\trank=" + rank
+				System.out.println("Score: " + docScore.score + "\trank=" + rank
 						+ "\trel=" + docScore.relevanceValue + "\tqid="
 						+ docScore.queryID + " " + docScore.text);
 				break;
@@ -214,7 +213,7 @@ public class RetrievalEvaluator extends CasConsumer_ImplBase {
 			metric_mrr +=  (1.0 / rank);
 		}
 		metric_mrr /= queryRanks.size();
-		metric_mrr = Math.round(metric_mrr * 100) / 100.0d;
+		metric_mrr = Math.round(metric_mrr * 1000) / 1000.0d;
 		return metric_mrr;
 	}
 

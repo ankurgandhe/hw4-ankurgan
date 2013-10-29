@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map;
 
-
-
 //Class to store the Document information created by annotations
 	public class DocumentScore {
 		public Integer queryID;
